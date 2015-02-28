@@ -24,3 +24,12 @@ proguard/
 
 # Log Files
 *.log
+
+gen
+bin
+.gradle/
+.idea/
+*.iml
+build/
+local.properties
+out/
