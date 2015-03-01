@@ -1,7 +1,15 @@
 package reverb.com.instagramsectiondisabler;
 
+import android.view.View;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
@@ -41,6 +49,29 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
                 }
             });
         }
+
+        XposedHelpers.findAndHookMethod("com.instagram.ui.widget.scrollabletabbar.ScrollableTabBar", loadPackageParam.classLoader, "setSwitcherButtons", List.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                //Field ok = XposedHelpers.findField(param.getClass(), "localArrayList1");
+                List<String> paramList = (List<String>)param.args[0];
+                log(paramList.get(paramList.size()-1).toString());
+                int placeOfPeopleString = -1;
+                for(int i =1; i<paramList.size(); i++)
+                {
+                    if(paramList.get(i).equals("People"))
+                    {
+                        placeOfPeopleString = i;
+                    }
+                }
+
+                if(placeOfPeopleString != -1)
+                {
+                    paramList.remove(placeOfPeopleString);
+                }
+            }
+        });
     }
 
     public boolean isEnabled(String preference) {
