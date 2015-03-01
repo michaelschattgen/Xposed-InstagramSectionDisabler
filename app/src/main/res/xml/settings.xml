@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="General" >
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="photos"
+            android:title="Disable the popular/photos section." />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="people"
+            android:title="Disable the people section." />
+    </PreferenceCategory>
+
+</PreferenceScreen>
