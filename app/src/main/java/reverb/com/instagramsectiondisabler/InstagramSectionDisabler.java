@@ -20,6 +20,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
     public XSharedPreferences prefs;
+    private String photosString = "";
+    private String peopleString = "";
+    private Boolean showDisabledTitle;
 
     private static void log(String log) {
         XposedBridge.log("InstagramSectionDisabler: " + log);
@@ -40,8 +43,13 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
 
         prefs.reload();
 
+        if(isEnabled("photos") && isEnabled("people"))
+        {
+            showDisabledTitle = true;
+        }
 
         if(isEnabled("photos")) {
+            photosString = "Photos";
             XposedHelpers.findAndHookMethod("com.instagram.android.fragment.bu", loadPackageParam.classLoader, "c", new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
@@ -52,26 +60,7 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
         }
 
         if(isEnabled("people")) {
-            XposedHelpers.findAndHookMethod("com.instagram.ui.widget.scrollabletabbar.ScrollableTabBar", loadPackageParam.classLoader, "setSwitcherButtons", List.class, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    //Field ok = XposedHelpers.findField(param.getClass(), "localArrayList1");
-                    List<String> paramList = (List<String>) param.args[0];
-                    log(paramList.get(paramList.size() - 1).toString());
-                    int placeOfPeopleString = -1;
-                    for (int i = 0; i < paramList.size(); i++) {
-                        if (paramList.get(i).equals("People")) {
-                            placeOfPeopleString = i;
-                        }
-                    }
-
-                    if (placeOfPeopleString != -1) {
-                        paramList.remove(placeOfPeopleString);
-                    }
-                }
-            });
-
+            peopleString = "People";
             XposedHelpers.findAndHookMethod("com.instagram.android.fragment.ge", loadPackageParam.classLoader, "b", List.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
@@ -79,6 +68,42 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
                 }
             });
         }
+
+        XposedHelpers.findAndHookMethod("com.instagram.ui.widget.scrollabletabbar.ScrollableTabBar", loadPackageParam.classLoader, "setSwitcherButtons", List.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                //Field ok = XposedHelpers.findField(param.getClass(), "localArrayList1");
+                List<String> paramList = (List<String>) param.args[0];
+                log(paramList.get(paramList.size() - 1).toString());
+                int placeOfPeopleString = -1;
+                int placeOfPhotosString = -1;
+                for (int i = 0; i < paramList.size(); i++) {
+                    if (paramList.get(i).equals(peopleString)) {
+                        placeOfPeopleString = i;
+                    }
+
+                    if(paramList.get(i).equals(photosString)) {
+                        placeOfPhotosString = i;
+                    }
+                }
+
+                if (placeOfPeopleString != -1) {
+                    paramList.remove(placeOfPeopleString);
+                }
+
+                if(placeOfPhotosString != -1) {
+                    paramList.remove(placeOfPhotosString);
+                }
+
+                if(showDisabledTitle)
+                {
+                    paramList.add("This is disabled.");
+                }
+            }
+        });
+
+
     }
 
     public boolean isEnabled(String preference) {
