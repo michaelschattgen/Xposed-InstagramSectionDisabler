@@ -96,7 +96,7 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
                     paramList.remove(placeOfPhotosString);
                 }
 
-                if(showDisabledTitle)
+                if(showDisabledTitle && paramList.size() == 0)
                 {
                     paramList.add("This is disabled.");
                 }
