@@ -2,14 +2,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="General" >
-        <SwitchPreference
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="photos"
-            android:title="Disable the popular/photos section." />
-        <SwitchPreference
+            android:title="Photos"
+            android:summary="Disable the popular/photos section." />
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="people"
-            android:title="Disable the people section." />
+            android:title="People"
+            android:summary="Disable the people section." />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Other">
+        <Preference
+            android:key="donate"
+            android:title="Donate"
+            android:summary="Buy me a beer :)"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
