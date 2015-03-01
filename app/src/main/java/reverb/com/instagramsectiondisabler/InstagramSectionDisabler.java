@@ -30,6 +30,8 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
         if (!loadPackageParam.packageName.equals("com.instagram.android"))
             return;
 
+        prefs.reload();
+
         if(isEnabled("photos")) {
             XposedHelpers.findAndHookMethod("com.instagram.android.fragment.bu", loadPackageParam.classLoader, "c", new XC_MethodReplacement() {
                 @Override
@@ -42,7 +44,9 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
     }
 
     public boolean isEnabled(String preference) {
-        return prefs.getBoolean(preference, false);
+        boolean enabled = prefs.getBoolean(preference, false);
+        log(preference + " is " + enabled);
+        return enabled;
     }
 
 }
