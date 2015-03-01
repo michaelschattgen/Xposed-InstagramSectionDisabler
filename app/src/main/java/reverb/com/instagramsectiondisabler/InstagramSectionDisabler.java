@@ -40,6 +40,7 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
 
         prefs.reload();
 
+
         if(isEnabled("photos")) {
             XposedHelpers.findAndHookMethod("com.instagram.android.fragment.bu", loadPackageParam.classLoader, "c", new XC_MethodReplacement() {
                 @Override
@@ -50,28 +51,34 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
             });
         }
 
-        XposedHelpers.findAndHookMethod("com.instagram.ui.widget.scrollabletabbar.ScrollableTabBar", loadPackageParam.classLoader, "setSwitcherButtons", List.class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                //Field ok = XposedHelpers.findField(param.getClass(), "localArrayList1");
-                List<String> paramList = (List<String>)param.args[0];
-                log(paramList.get(paramList.size()-1).toString());
-                int placeOfPeopleString = -1;
-                for(int i =1; i<paramList.size(); i++)
-                {
-                    if(paramList.get(i).equals("People"))
-                    {
-                        placeOfPeopleString = i;
+        if(isEnabled("people")) {
+            XposedHelpers.findAndHookMethod("com.instagram.ui.widget.scrollabletabbar.ScrollableTabBar", loadPackageParam.classLoader, "setSwitcherButtons", List.class, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    //Field ok = XposedHelpers.findField(param.getClass(), "localArrayList1");
+                    List<String> paramList = (List<String>) param.args[0];
+                    log(paramList.get(paramList.size() - 1).toString());
+                    int placeOfPeopleString = -1;
+                    for (int i = 0; i < paramList.size(); i++) {
+                        if (paramList.get(i).equals("People")) {
+                            placeOfPeopleString = i;
+                        }
+                    }
+
+                    if (placeOfPeopleString != -1) {
+                        paramList.remove(placeOfPeopleString);
                     }
                 }
+            });
 
-                if(placeOfPeopleString != -1)
-                {
-                    paramList.remove(placeOfPeopleString);
+            XposedHelpers.findAndHookMethod("com.instagram.android.fragment.ge", loadPackageParam.classLoader, "b", List.class, new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                    return null;
                 }
-            }
-        });
+            });
+        }
     }
 
     public boolean isEnabled(String preference) {
