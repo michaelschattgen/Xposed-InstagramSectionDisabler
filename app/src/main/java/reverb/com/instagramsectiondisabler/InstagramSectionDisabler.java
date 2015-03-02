@@ -88,12 +88,14 @@ public class InstagramSectionDisabler implements IXposedHookLoadPackage, IXposed
                     }
                 }
 
-                if (placeOfPeopleString != -1) {
-                    paramList.remove(placeOfPeopleString);
-                }
-
-                if(placeOfPhotosString != -1) {
+                if (placeOfPeopleString != -1 && placeOfPhotosString != -1) {
                     paramList.remove(placeOfPhotosString);
+                    paramList.remove(placeOfPeopleString-1);
+                }else if(placeOfPeopleString != -1) {
+                    paramList.remove(placeOfPeopleString-1);
+                }else if(placeOfPhotosString != -1)
+                {
+                    paramList.set(placeOfPhotosString, "Disabled");
                 }
 
                 if(showDisabledTitle && paramList.size() == 0)
