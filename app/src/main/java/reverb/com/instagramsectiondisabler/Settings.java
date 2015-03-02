@@ -1,9 +1,12 @@
 package reverb.com.instagramsectiondisabler;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 
@@ -27,6 +30,16 @@ public class Settings extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesMode(MODE_WORLD_READABLE);
             addPreferencesFromResource(R.xml.settings);
+
+            Preference button = (Preference)findPreference("donate");
+            button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference arg0) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.reverbs.pw/donate"));
+                    startActivity(browserIntent);
+                    return true;
+                }
+            });
         }
     }
 
